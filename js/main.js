@@ -1,14 +1,18 @@
 const $form = document.querySelector('#novoItem');
 const $list = document.querySelector('#list');
+const itemsInLocalStorage = [];
 
 $form.addEventListener('submit', (e) => addItemToTravelList(e));
 
 function addItemToTravelList(e) {
   e.preventDefault();
 
-  const itemName = e.target.elements['nome'].value;
-  const itemAmount = e.target.elements['quantidade'].value;
-  createListItem(itemName, itemAmount);
+  let itemName = e.target.elements['nome'];
+  let itemAmount = e.target.elements['quantidade'];
+  createListItem(itemName.value, itemAmount.value);
+
+  itemName.value = '';
+  itemAmount.value = '';
 }
 
 function createListItem(name, amount) {
@@ -22,4 +26,11 @@ function createListItem(name, amount) {
   newItem.innerHTML += name;
 
   $list.appendChild(newItem);
+
+  const currentItem = {
+    name: name,
+    amount: amount,
+  };
+  itemsInLocalStorage.push(currentItem);
+  localStorage.setItem('travelItems', JSON.stringify(itemsInLocalStorage));
 }
