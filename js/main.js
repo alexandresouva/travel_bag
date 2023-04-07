@@ -1,36 +1,40 @@
-const $form = document.querySelector('#novoItem');
+'use strict';
+
+const $form = document.querySelector('#form');
 const $list = document.querySelector('#list');
-const itemsInLocalStorage = [];
+// Retorna o primeiro valor true, se ambos forem falsos, o último valor é retornado
+const itemsInLocalStorage = JSON.parse(localStorage.getItem('backpack')) || [];
 
-$form.addEventListener('submit', (e) => addItemToTravelList(e));
-
-function addItemToTravelList(e) {
+$form.addEventListener('submit', function addItemToBackpack(e) {
   e.preventDefault();
 
   let itemName = e.target.elements['nome'];
   let itemAmount = e.target.elements['quantidade'];
-  createListItem(itemName.value, itemAmount.value);
+
+  const currentItem = {
+    name: itemName.value,
+    amount: itemAmount.value,
+  };
+
+  createItemIntoDOM(currentItem);
+  itemsInLocalStorage.push(currentItem);
+  localStorage.setItem('backpack', JSON.stringify(itemsInLocalStorage));
 
   itemName.value = '';
   itemAmount.value = '';
-}
+});
 
-function createListItem(name, amount) {
+itemsInLocalStorage?.forEach((item) => createItemIntoDOM(item));
+
+function createItemIntoDOM(item) {
   const newItem = document.createElement('li');
   newItem.classList.add('item');
 
   const quantityOfItems = document.createElement('strong');
-  quantityOfItems.textContent = amount;
+  quantityOfItems.textContent = item.amount;
 
   newItem.appendChild(quantityOfItems);
-  newItem.innerHTML += name;
+  newItem.innerHTML += item.name;
 
   $list.appendChild(newItem);
-
-  const currentItem = {
-    name: name,
-    amount: amount,
-  };
-  itemsInLocalStorage.push(currentItem);
-  localStorage.setItem('travelItems', JSON.stringify(itemsInLocalStorage));
 }
