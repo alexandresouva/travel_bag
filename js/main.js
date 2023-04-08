@@ -10,14 +10,25 @@ $form.addEventListener('submit', function addItemToBackpack(e) {
 
   let itemName = e.target.elements['nome'];
   let itemAmount = e.target.elements['quantidade'];
-
   const currentItem = {
+    id: itemsInLocalStorage.length,
     name: itemName.value,
     amount: itemAmount.value,
   };
 
-  createItemIntoDOM(currentItem);
-  itemsInLocalStorage.push(currentItem);
+  const isADuplicateItem = itemsInLocalStorage.find(
+    (item) => item.name === currentItem.name
+  );
+
+  if (isADuplicateItem) {
+    currentItem.id = isADuplicateItem.id;
+    itemsInLocalStorage[currentItem.id].amount = currentItem.amount;
+    updateItemIntoDOM(currentItem);
+  } else {
+    createItemIntoDOM(currentItem);
+    itemsInLocalStorage.push(currentItem);
+  }
+
   localStorage.setItem('backpack', JSON.stringify(itemsInLocalStorage));
 
   itemName.value = '';
@@ -31,10 +42,16 @@ function createItemIntoDOM(item) {
   newItem.classList.add('item');
 
   const quantityOfItems = document.createElement('strong');
+  quantityOfItems.classList.add('item__amount');
   quantityOfItems.textContent = item.amount;
 
   newItem.appendChild(quantityOfItems);
   newItem.innerHTML += item.name;
 
   $list.appendChild(newItem);
+}
+
+function updateItemIntoDOM(item) {
+  const amount = $list.querySelectorAll('.item')[item.id].firstChild;
+  amount.textContent = item.amount;
 }
